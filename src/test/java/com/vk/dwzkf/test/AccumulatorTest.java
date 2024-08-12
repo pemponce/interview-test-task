@@ -130,7 +130,7 @@ public class AccumulatorTest {
         State[] actual = stateObjects.stream()
                 .map(StateObject::getState)
                 .toArray(State[]::new);
-        Assertions.assertArrayEquals(actual, expected);
+        Assertions.assertArrayEquals(expected, actual);
     }
 
     private void checkSequenceNumbers(List<StateObject> stateObjects, Integer... expected) {
