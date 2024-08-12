@@ -8,7 +8,6 @@ import com.vk.dwzkf.test.impl.AccumulatorImpl;
  */
 public class AccumulatorFactory {
     public Accumulator getInstance() {
-        //your code here
         return new AccumulatorImpl();
     }
 }

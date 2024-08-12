@@ -16,7 +16,12 @@ public class AccumulatorImpl implements Accumulator {
     }
 
     @Override
-    public List<StateObject> drain(Long contextId) {
+    public void acceptAll(List<StateObject> stateObjects) {
+        stateObjects.forEach(this::accept);
+    }
+
+    @Override
+    public List<StateObject> drain(Long processId) {
         //your code here
         return null;
     }

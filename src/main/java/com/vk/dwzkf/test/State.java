@@ -1,6 +1,7 @@
 package com.vk.dwzkf.test;
 
 /**
+ * Все возможные состояния процесса
  * @author Roman Shageev
  * @since 12.08.2024
  */

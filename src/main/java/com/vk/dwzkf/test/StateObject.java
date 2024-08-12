@@ -1,20 +1,38 @@
 package com.vk.dwzkf.test;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * Представляет собой объект уведомления
  * @author Roman Shageev
  * @since 12.08.2024
  */
 @Getter
-@AllArgsConstructor
 public class StateObject {
-    private static final AtomicInteger counter = new AtomicInteger();
+    private static final Map<Long, AtomicInteger> sequenceGenerator = new HashMap<>();
 
-    private final Long contextId;
+    /**
+     * ID процесса
+     */
+    private final Long processId;
+    /**
+     * Статус
+     */
     private final State state;
-    private final Integer seqNo = counter.incrementAndGet();
+    /**
+     * Порядковый номер уведомления
+     */
+    private final Integer seqNo;
+
+
+    public StateObject(Long processId, State state) {
+        this.processId = processId;
+        this.state = state;
+        this.seqNo = sequenceGenerator.computeIfAbsent(processId, ctx -> new AtomicInteger())
+                .incrementAndGet();
+    }
 }
