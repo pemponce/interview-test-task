@@ -64,7 +64,7 @@ public class AccumulatorImpl implements Accumulator {
                     lastState = stateObject.getState();
                     res.add(stateObject);
                 }
-            } else if (lastState != null && isFinalState(lastState)) break;
+            }
             else if (lastState == null || isValidTransition(lastState, stateObject.getState())) {
                 res.add(stateObject);
                 lastState = stateObject.getState();
@@ -76,19 +76,11 @@ public class AccumulatorImpl implements Accumulator {
 
     private boolean isValidTransition(State lastState, State currentState) {
         return switch (lastState) {
-            case START1 ->
-                    currentState == State.MID1 || (currentState == State.FINAL1 || currentState == State.FINAL2) &&
-                            isFinalState(currentState);
-            case START2 ->
+            case START1, MID2, START2 ->
                     currentState == State.MID1 || isFinalState(currentState);
-            case MID2 ->
-                    currentState == State.START1 || currentState == State.MID1 || (currentState == State.FINAL1 ||
-                            currentState == State.FINAL2) && isFinalState(currentState);
             case MID1 ->
-                    currentState == State.MID1 || currentState == State.MID2 || (currentState == State.FINAL1 || currentState == State.FINAL2) &&
+                    currentState == State.MID2 || (currentState == State.FINAL1 || currentState == State.FINAL2) &&
                             isFinalState(currentState);
-            case FINAL2 ->
-                    isFinalState(currentState) || currentState == State.START1;
             default -> false;
         };
     }
