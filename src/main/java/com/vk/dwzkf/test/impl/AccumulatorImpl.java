@@ -5,6 +5,7 @@ import com.vk.dwzkf.test.State;
 import com.vk.dwzkf.test.StateObject;
 
 import java.util.*;
+
 /**
  * @author Roman Shageev
  * @since 12.08.2024
@@ -32,7 +33,7 @@ public class AccumulatorImpl implements Accumulator {
             State state2 = o2.getState();
 
             if ((state1 == State.MID1 && state2 == State.MID2) || (state1 == State.MID2 && state2 == State.MID1)) {
-                return 3;
+                return 1;
             }
 
             return state1.compareTo(state2);
@@ -51,36 +52,36 @@ public class AccumulatorImpl implements Accumulator {
     @Override
     public List<StateObject> drain(Long processId) {
         PriorityQueue<StateObject> stateObjects = processMap.get(processId);
+
         List<StateObject> list = new ArrayList<>(stateObjects.stream().toList());
-        for(int i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
             stateObjects.remove(list.get(i));
         }
         count = 0;
         List<StateObject> res = new ArrayList<>();
-
-        for (StateObject stateObject : stateObjects) {
-            if (stateObjects.size() == 1 && lastState == null) {
-                if (stateObject.getState() == State.START2) {
-                    lastState = stateObject.getState();
+        if (stateObjects.size() == 1 && lastState == null) {
+            if (stateObjects.peek().getState() == State.START2) {
+                lastState = stateObjects.peek().getState();
+                res.add(stateObjects.peek());
+            }
+        } else {
+            for (StateObject stateObject : stateObjects) {
+                if (lastState == null || isValidTransition(lastState, stateObject.getState())) {
                     res.add(stateObject);
+                    lastState = stateObject.getState();
                 }
+                count++;
             }
-            else if (lastState == null || isValidTransition(lastState, stateObject.getState())) {
-                res.add(stateObject);
-                lastState = stateObject.getState();
-            }
-            count++;
         }
+
         return res;
     }
 
     private boolean isValidTransition(State lastState, State currentState) {
         return switch (lastState) {
-            case START1, MID2, START2 ->
-                    currentState == State.MID1 || isFinalState(currentState);
-            case MID1 ->
-                    currentState == State.MID2 || (currentState == State.FINAL1 || currentState == State.FINAL2) &&
-                            isFinalState(currentState);
+            case START1, MID2, START2 -> currentState == State.MID1 || isFinalState(currentState);
+            case MID1 -> currentState == State.MID2 || (currentState == State.FINAL1 ||
+                    currentState == State.FINAL2) && isFinalState(currentState);
             default -> false;
         };
     }
